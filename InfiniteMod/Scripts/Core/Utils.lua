@@ -3,18 +3,14 @@ local Utils = {}
 Utils.pcall = pcall
 Utils.pairs = pairs
 Utils.ipairs = ipairs
-Utils.next = next
 Utils.type = type
-Utils.Player = Player
 Utils.tostring = tostring
 Utils.tonumber = tonumber
 Utils.unpack = unpack or table.unpack
 Utils.rawget = rawget
 Utils.require = require
 Utils.string_find = string.find
-Utils.string_lower = string.lower
 Utils.table_insert = table.insert
-Utils.math_min = math.min
 Utils.os_clock = os.clock
 Utils.FindAllOf = FindAllOf
 Utils.FindFirstOf = FindFirstOf
@@ -26,9 +22,6 @@ Utils.ExecuteAsync = ExecuteAsync
 Utils.LoadAsset = LoadAsset
 Utils.FName = FName
 Utils.Key = Key
-Utils.ModifierKey = ModifierKey
-Utils.EFindName = EFindName
-Utils.NAME_None = NAME_None
 
 local pcall = pcall
 local FindAllOf = FindAllOf
@@ -268,19 +261,6 @@ function Utils.CollectGarbage()
         _lastGarbageCollectMs = now
         _garbageRequestCount = 0
     end
-end
-
-function Utils.RequestGarbageCollection()
-    Utils.CollectGarbage()
-end
-
-function Utils.GetGarbageStats()
-    return {
-        totalRequests = _garbageTotalRequests,
-        pendingRequests = _garbageRequestCount,
-        lastGCTime = _lastGarbageCollectMs,
-        timeSinceLastGC = Utils.nowMs() - _lastGarbageCollectMs,
-    }
 end
 
 local _registeredCaches = {}
