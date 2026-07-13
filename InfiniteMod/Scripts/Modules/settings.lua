@@ -1,5 +1,4 @@
 local Hooks = require("Core.Hooks")
-local Timing = require("Core.Timing")
 local Utils = require("Core.Utils")
 
 local SettingsModule = {}
@@ -10,7 +9,7 @@ local pairs = Utils.pairs
 local ipairs = Utils.ipairs
 local FindAllOf = Utils.FindAllOf
 local StaticFindObject = Utils.StaticFindObject
-local MAX_FINDALL_RESULTS = Timing.MAX_FINDALL_STANDARD
+local MAX_FINDALL_RESULTS = Utils.MAX_FINDALL_STANDARD
 local safeCall = Utils.safeCall
 local tostring = Utils.tostring
 local isValidUObject = Utils.isValidUObject
@@ -25,7 +24,7 @@ local GAMESETTING_PATHS = {
 }
 local HOOK_SERVER_ACK = "/Script/Engine.PlayerController:ServerAcknowledgePossession"
 local PAL_UTILITY_PATH = "/Script/Pal.Default__PalUtility"
-local patchedObjects, cleanupCache = Utils.createCacheCleanup(Timing.CACHE_CLEANUP_INTERVAL)
+local patchedObjects, cleanupCache = Utils.createCacheCleanup(Utils.CACHE_CLEANUP_INTERVAL)
 local palUtilityDefault = nil
 
 local SETTINGS_PRESETS = {
