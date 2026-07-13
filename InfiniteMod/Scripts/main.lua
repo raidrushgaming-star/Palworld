@@ -6,7 +6,7 @@ local ipairs = Utils.ipairs
 local type = Utils.type
 local require = Utils.require
 
-local module_file_map = { "settings", "boss", "clear", "give", "size", "travel", "upgrades", "weapons", "workers" }
+local module_file_map = { "settings", "god", "give", "travel", "upgrades", "weapons" }
 
 for _, moduleName in ipairs(module_file_map) do
     local ok, module_or_err = pcall(_require, "Modules." .. moduleName)
