@@ -9,7 +9,6 @@ local table_insert = Utils.table_insert
 local ExecuteWithDelay = Utils.ExecuteWithDelay
 local RegisterHook = Utils.RegisterHook
 local NotifyOnNewObject = Utils.NotifyOnNewObject
-local LoadAsset = Utils.LoadAsset
 local runOnGameThread = Utils.runOnGameThread
 
 local function isBlueprintPath(path)
@@ -20,15 +19,12 @@ local function loadBlueprintAsset(path)
     if not isBlueprintPath(path) then
         return true
     end
-    if not LoadAsset then
-        return true
-    end
     local classPath = path:match("^([^:]+)")
     if not classPath then
         return true
     end
-    local ok, err = pcall(function()
-        LoadAsset(classPath)
+    local ok = pcall(function()
+        Utils.LoadAsset(classPath)
     end)
     return ok
 end
@@ -36,45 +32,38 @@ end
 local registeredHooks = {}
 local registeredNotifies = {}
 
-local function isFeatureEnabled(featureName)
-    return true
-end
-
 local CLIENT_RESTART_PATH = "/Script/Engine.PlayerController:ClientRestart"
 local clientRestartHandlers = {}
 local clientRestartHookRegistered = false
 
 local function dispatchClientRestart(Context, NewPawn)
     for _, handler in ipairs(clientRestartHandlers) do
-        if isFeatureEnabled(handler.featureName) then
-            local callback = handler.callback
-            local delayMs = handler.delayMs
-            if delayMs > 0 then
-                if handler.useParams then
-                    local ctx, pawn = Context, NewPawn
-                    ExecuteWithDelay(delayMs, function()
-                        Utils.safeCall(function()
-                            return callback(ctx, pawn)
-                        end)
-                    end)
-                else
-                    ExecuteWithDelay(delayMs, function()
-                        Utils.safeCall(function()
-                            return callback()
-                        end)
-                    end)
-                end
-            else
-                local ok, err
-                if handler.useParams then
+        local callback = handler.callback
+        local delayMs = handler.delayMs
+        if delayMs > 0 then
+            if handler.useParams then
+                local ctx, pawn = Context, NewPawn
+                ExecuteWithDelay(delayMs, function()
                     Utils.safeCall(function()
-                        return callback(Context, NewPawn)
+                        return callback(ctx, pawn)
                     end)
-                else
+                end)
+            else
+                ExecuteWithDelay(delayMs, function()
                     Utils.safeCall(function()
                         return callback()
                     end)
-                end
+                end)
+            end
+        else
+            if handler.useParams then
+                Utils.safeCall(function()
+                    return callback(Context, NewPawn)
+                end)
+            else
+                Utils.safeCall(function()
+                    return callback()
+                end)
             end
         end
     end
@@ -84,7 +73,7 @@ local function ensureClientRestartHook()
     if clientRestartHookRegistered then
         return true
     end
-    local ok, err = pcall(function()
+    local ok = pcall(function()
         RegisterHook(CLIENT_RESTART_PATH, dispatchClientRestart)
     end)
     if ok then
@@ -106,9 +95,6 @@ function Hooks.Register(path, featureName, preCallback, postCallback)
             return nil
         end
         return function(...)
-            if not isFeatureEnabled(featureName) then
-                return
-            end
             local ok, r1, r2, r3, r4 = pcall(callback, ...)
             if not ok then
                 return
@@ -117,11 +103,11 @@ function Hooks.Register(path, featureName, preCallback, postCallback)
         end
     end
     local preId, postId
-    local ok, err
+    local ok
     if isScriptPath then
         local wrappedPre = wrapCallback(preCallback) or function() end
         local wrappedPost = wrapCallback(postCallback)
-        ok, err = pcall(function()
+        ok = pcall(function()
             if wrappedPost then
                 preId, postId = RegisterHook(path, wrappedPre, wrappedPost)
             else
@@ -134,7 +120,7 @@ function Hooks.Register(path, featureName, preCallback, postCallback)
         if not wrappedCallback then
             return false
         end
-        ok, err = pcall(function()
+        ok = pcall(function()
             preId, postId = RegisterHook(path, wrappedCallback)
         end)
     end
@@ -191,14 +177,11 @@ function Hooks.Notify(className, featureName, callback)
         return false
     end
     local wrappedCallback = function(obj)
-        if not isFeatureEnabled(featureName) then
-            return
-        end
         Utils.safeCall(function()
             return callback(obj)
         end)
     end
-    local ok, err = pcall(function()
+    local ok = pcall(function()
         NotifyOnNewObject(className, wrappedCallback)
     end)
     if not ok then
@@ -244,12 +227,6 @@ function Hooks.OnPalGameSetting(moduleName, callback)
         end)
         dispatcherRegistered.PalGameSetting = true
     end
-end
-
-function Hooks.GetDispatcherStats()
-    return {
-        PalGameSetting = #dispatcherHandlers.PalGameSetting,
-    }
 end
 
 return Hooks
