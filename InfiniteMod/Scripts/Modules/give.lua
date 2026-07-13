@@ -1,4 +1,3 @@
-local Timing = require("Core.Timing")
 local Utils = require("Core.Utils")
 
 local GiveModule = {}
@@ -7,7 +6,7 @@ local GarbageCollect = Utils.CollectGarbage
 local FindFirstOf = Utils.FindFirstOf
 local ipairs = Utils.ipairs
 local FName = Utils.FName
-local canPressKey = Timing.CreateKeyedChecker(Timing.KEY_DEBOUNCE)
+local canPressKey = Utils.CreateKeyedChecker(Utils.KEY_DEBOUNCE)
 local safeCall = Utils.safeCall
 local isValidUObject = Utils.isValidUObject
 local ExecuteWithDelay = Utils.ExecuteWithDelay
