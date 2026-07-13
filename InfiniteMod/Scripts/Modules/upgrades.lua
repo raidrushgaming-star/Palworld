@@ -12,6 +12,7 @@ local GarbageCollect = Utils.CollectGarbage
 local ExecuteWithDelay = Utils.ExecuteWithDelay
 local ModifyDataTable = Utils.ModifyDataTable
 local runOnGameThread = Utils.runOnGameThread
+local StaticFindObject = Utils.StaticFindObject
 local hooked = false
 local patchedObjects, cleanupCache = Utils.createCacheCleanup(Timing.CACHE_CLEANUP_INTERVAL)
 local initialized = false
@@ -19,6 +20,7 @@ local patchedTables = {}
 local canProcessHook = Timing.CreateChecker(1500)
 local TABLE_MONSTER = "/Game/Pal/DataTable/Character/DT_PalMonsterParameter.DT_PalMonsterParameter"
 local UPGRADES_PATH = "/Script/Pal.PalCharacterParameterComponent:OnInitializedCharacter"
+local PAL_UTILITY_PATH = "/Script/Pal.Default__PalUtility"
 
 local function ConditionalModifier(currentValue)
     if currentValue and currentValue > 0 then
@@ -68,6 +70,22 @@ function UpgradesModule.Initialize()
             if not s then
                 return
             end
+            
+            -- Only apply upgrades to basecamp pals
+            local PalUtil = safeCall(function()
+                return StaticFindObject(PAL_UTILITY_PATH)
+            end)
+            if not PalUtil or not isValidUObject(PalUtil) then
+                return
+            end
+            if
+                not safeCall(function()
+                    return PalUtil:IsBaseCampPal(t)
+                end)
+            then
+                return
+            end
+            
             local key = safeCall(function()
                 return t:GetAddress()
             end)
