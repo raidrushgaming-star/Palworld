@@ -5,6 +5,7 @@ local BossModule = {}
 
 local GarbageCollect = Utils.CollectGarbage
 local FindAllOf = Utils.FindAllOf
+local FindFirstOf = Utils.FindFirstOf
 local ipairs = Utils.ipairs
 local safeCall = Utils.safeCall
 local isValidUObject = Utils.isValidUObject
@@ -13,6 +14,7 @@ local Key = Utils.Key
 local pcall = Utils.pcall
 local rawget = Utils.rawget
 local NPC_SPAWNER_CLASS = "PalNPCSpawnerBase"
+local PLAYER_CLASS = "PalPlayerCharacter"
 local canToggle = Timing.CreateChecker(Timing.KEY_DEBOUNCE)
 local keybindRegistered = false
 
@@ -47,6 +49,27 @@ function BossModule.Keybind()
     GarbageCollect()
 end
 
+function BossModule.ClearStatusEffects()
+    if not canToggle() then
+        return
+    end
+    local player = safeCall(function()
+        return FindFirstOf(PLAYER_CLASS)
+    end)
+    if not player or not isValidUObject(player) then
+        return
+    end
+    local statusComp = safeCall(function()
+        return player.StatusComponent
+    end)
+    if not statusComp or not isValidUObject(statusComp) then
+        return
+    end
+    safeCall(function()
+        statusComp:RemoveAll()
+    end)
+end
+
 local function registerKeybind()
     if keybindRegistered then
         return true
@@ -58,6 +81,9 @@ local function registerKeybind()
     local ok = pcall(function()
         engineRegister(Key.F2, function()
             BossModule.Keybind()
+        end)
+        engineRegister(Key.F3, function()
+            BossModule.ClearStatusEffects()
         end)
     end)
     if ok then
