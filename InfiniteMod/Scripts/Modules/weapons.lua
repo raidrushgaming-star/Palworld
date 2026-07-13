@@ -1,5 +1,4 @@
 local Hooks = require("Core.Hooks")
-local Timing = require("Core.Timing")
 local Utils = require("Core.Utils")
 
 local WeaponsModule = {}
@@ -9,7 +8,7 @@ local isValidUObject = Utils.isValidUObject
 local isSafeInstance = Utils.isSafeInstance
 local HooksNotify = Hooks.Notify
 local hooked = false
-local patchedWeapons, cleanupCache = Utils.createCacheCleanup(Timing.CACHE_CLEANUP_INTERVAL)
+local patchedWeapons, cleanupCache = Utils.createCacheCleanup(Utils.CACHE_CLEANUP_INTERVAL)
 
 local function applyWeaponSettings(w)
     if not isValidUObject(w) or not isSafeInstance(w) then
