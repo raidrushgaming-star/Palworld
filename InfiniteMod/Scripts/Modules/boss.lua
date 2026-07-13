@@ -1,5 +1,4 @@
 local Utils = require("Core.Utils")
-local Timing = require("Core.Timing")
 
 local BossModule = {}
 
@@ -15,7 +14,7 @@ local pcall = Utils.pcall
 local rawget = Utils.rawget
 local NPC_SPAWNER_CLASS = "PalNPCSpawnerBase"
 local PLAYER_CLASS = "PalPlayerCharacter"
-local canToggle = Timing.CreateChecker(Timing.KEY_DEBOUNCE)
+local canToggle = Utils.CreateChecker(Utils.KEY_DEBOUNCE)
 local keybindRegistered = false
 
 function BossModule.Keybind()

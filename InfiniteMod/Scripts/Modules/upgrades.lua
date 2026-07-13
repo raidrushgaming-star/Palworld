@@ -1,4 +1,3 @@
-local Timing = require("Core.Timing")
 local Hooks = require("Core.Hooks")
 local Utils = require("Core.Utils")
 
@@ -14,10 +13,10 @@ local ModifyDataTable = Utils.ModifyDataTable
 local runOnGameThread = Utils.runOnGameThread
 local StaticFindObject = Utils.StaticFindObject
 local hooked = false
-local patchedObjects, cleanupCache = Utils.createCacheCleanup(Timing.CACHE_CLEANUP_INTERVAL)
+local patchedObjects, cleanupCache = Utils.createCacheCleanup(Utils.CACHE_CLEANUP_INTERVAL)
 local initialized = false
 local patchedTables = {}
-local canProcessHook = Timing.CreateChecker(1500)
+local canProcessHook = Utils.CreateChecker(1500)
 local TABLE_MONSTER = "/Game/Pal/DataTable/Character/DT_PalMonsterParameter.DT_PalMonsterParameter"
 local UPGRADES_PATH = "/Script/Pal.PalCharacterParameterComponent:OnInitializedCharacter"
 local PAL_UTILITY_PATH = "/Script/Pal.Default__PalUtility"
